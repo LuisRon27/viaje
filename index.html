@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vuelo</title>
+   
+</head>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        gap: 30px;
+        background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+        font-family: 'Arial', sans-serif;
+    }
+
+    .countdown {
+        text-align: center;
+        color: #fff;
+        padding: 20px 40px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(5px);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+        width: 90%;
+        max-width: 600px;
+        box-sizing: border-box;
+    }
+
+    #event-name {
+        font-size: clamp(1.2em, 4vw, 2em);
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #fff;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    #timer {
+        display: flex;
+        gap: clamp(10px, 2vw, 20px);
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .time-block {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 0 1 auto;
+    }
+
+    #timer span {
+        font-size: clamp(1.5em, 5vw, 2.5em);
+        font-weight: bold;
+        background: rgba(255, 255, 255, 0.2);
+        padding: clamp(10px, 2vw, 15px);
+        border-radius: 15px;
+        min-width: clamp(50px, 10vw, 70px);
+        display: inline-block;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .time-label {
+        font-size: 1em !important;
+        background: none !important;
+        padding: 5px 0 !important;
+        min-width: auto !important;
+        color: #fff;
+        opacity: 0.9;
+    }
+
+    .box {
+        position: relative;
+        width: min(90%, 400px);
+        height: min(90vw, 400px);
+        background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+        border-radius: 50%;
+        border: 10px solid rgba(255, 255, 255, 0.8);
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 20px;
+    }
+
+
+    /* Animación de corazones flotantes */
+    .hearts {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    @keyframes float {
+        0% {
+            transform: translateY(100%) rotate(0deg);
+            opacity: 1;
+        }
+
+        100% {
+            transform: translateY(-100%) rotate(360deg);
+            opacity: 0;
+        }
+    }
+
+    .heart {
+        position: absolute;
+        font-size: 20px;
+        color: rgba(255, 255, 255, 0.8);
+        animation: float 4s linear infinite;
+    }
+
+    .plane {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        animation: animate-plane 1s linear infinite;
+    }
+
+    .plane img {
+        position: relative;
+        z-index: 3;
+        width: 70%;
+    }
+
+    @keyframes animate-plane {
+        0% {
+            transform: translate(2px, 2px);
+        }
+
+        50% {
+            transform: translate(-2px, -2px);
+        }
+
+        100% {
+            transform: translate(2px, 2px);
+        }
+    }
+
+    .cloud {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+    }
+
+    .cloud svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: .8;
+        animation: animate-cloud 1s linear infinite;
+        z-index: 2;
+        width: 30%;
+        height: 30%;
+    }
+
+    @keyframes animate-cloud {
+        0% {
+            transform: translateX(400px);
+        }
+
+        40%,
+        100% {
+            transform: translateX(-400px);
+        }
+    }
+
+    .cloud svg:nth-child(1) {
+        top: 50px;
+        animation-delay: -2s;
+        animation: animate-cloud 1.25s linear infinite;
+    }
+
+    .cloud svg:nth-child(2) {
+        top: 180px;
+        animation-delay: -1s;
+        animation: animate-cloud 1s linear infinite;
+    }
+
+    .cloud svg:nth-child(3) {
+        top: 100px;
+        animation-delay: -2.5s;
+        animation: animate-cloud .75s linear infinite;
+    }
+
+    /* Media Queries */
+    @media screen and (max-width: 768px) {
+        body {
+            padding: 20px 10px;
+        }
+
+        .countdown {
+            padding: 15px;
+        }
+
+        #timer {
+            gap: 10px;
+        }
+
+        .time-block {
+            min-width: 60px;
+        }
+
+    }
+
+    @media screen and (max-width: 480px) {
+        body {
+            gap: 15px;
+        }
+
+        #event-name {
+            margin-bottom: 10px;
+        }
+
+        #timer span {
+            padding: 8px 12px;
+            min-width: 45px;
+        }
+
+        .time-label {
+            font-size: 0.8em !important;
+        }
+
+
+    }
+
+    @media screen and (max-width: 320px) {
+        .countdown {
+            padding: 10px;
+        }
+
+        #timer {
+            gap: 5px;
+        }
+
+        #timer span {
+            padding: 5px 8px;
+            min-width: 35px;
+        }
+
+
+    }
+
+    @media screen and (max-height: 600px) {
+        body {
+            gap: 10px;
+        }
+
+        .countdown {
+            margin-top: 10px;
+        }
+
+
+    }
+
+    @media screen and (min-width: 1200px) {
+        .countdown {
+            max-width: 800px;
+        }
+
+        #event-name {
+            font-size: 2.5em;
+        }
+
+        #timer span {
+            font-size: 3em;
+        }
+    }
+
+    @media screen and (max-height: 500px) and (orientation: landscape) {
+        body {
+            flex-direction: row;
+            gap: 20px;
+            padding: 10px;
+        }
+
+        .countdown {
+            margin-top: 0;
+            width: 45%;
+        }
+
+    }
+</style>
+
+<body>
+
+    <div class="countdown">
+        <div id="event-name">Tiempo para ver a mi amor ❤️</div>
+        <div id="timer">
+            <div class="time-block">
+                <span id="days">00</span>
+                <span class="time-label">días</span>
+            </div>
+            <div class="time-block">
+                <span id="hours">00</span>
+                <span class="time-label">horas</span>
+            </div>
+            <div class="time-block">
+                <span id="minutes">00</span>
+                <span class="time-label">min</span>
+            </div>
+            <div class="time-block">
+                <span id="seconds">00</span>
+                <span class="time-label">seg</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="box">
+
+        <div class="hearts"></div>
+
+        <div class="plane">
+            <img src="https://cdn-icons-png.flaticon.com/512/619/619043.png" alt="" width="70%">
+        </div>
+
+        <div class="cloud">
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="512"
+                height="512" x="0" y="0" viewBox="0 0 447.801 447" style="enable-background:new 0 0 512 512"
+                xml:space="preserve" class="">
+                <g>
+                    <path fill="#ffffff"
+                        d="M447.8 202.152a63.616 63.616 0 0 1-18.542 45.114 63.593 63.593 0 0 1-45.035 18.714H63.62A63.654 63.654 0 0 1 0 202.003a2.74 2.74 0 0 0 .012-.25l.097-3.362c.082-40.16 27.461-74.38 65.082-83.028v-.02c.008-54.327 38.047-101.238 91.204-112.46C209.55-8.344 263.309 19.176 285.28 68.863c43.567-6.16 85.7 18.266 102 59.14 33.32 3.54 60.36 34.38 60.43 70.52l.078 3.418c0 .07.012.141.012.211zm0 0"
+                        opacity="1" data-original="#00acea" class=""></path>
+                </g>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="512"
+                height="512" x="0" y="0" viewBox="0 0 447.801 447" style="enable-background:new 0 0 512 512"
+                xml:space="preserve" class="">
+                <g>
+                    <path fill="#ffffff"
+                        d="M447.8 202.152a63.616 63.616 0 0 1-18.542 45.114 63.593 63.593 0 0 1-45.035 18.714H63.62A63.654 63.654 0 0 1 0 202.003a2.74 2.74 0 0 0 .012-.25l.097-3.362c.082-40.16 27.461-74.38 65.082-83.028v-.02c.008-54.327 38.047-101.238 91.204-112.46C209.55-8.344 263.309 19.176 285.28 68.863c43.567-6.16 85.7 18.266 102 59.14 33.32 3.54 60.36 34.38 60.43 70.52l.078 3.418c0 .07.012.141.012.211zm0 0"
+                        opacity="1" data-original="#00acea" class=""></path>
+                </g>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="512"
+                height="512" x="0" y="0" viewBox="0 0 447.801 447" style="enable-background:new 0 0 512 512"
+                xml:space="preserve" class="">
+                <g>
+                    <path fill="#ffffff"
+                        d="M447.8 202.152a63.616 63.616 0 0 1-18.542 45.114 63.593 63.593 0 0 1-45.035 18.714H63.62A63.654 63.654 0 0 1 0 202.003a2.74 2.74 0 0 0 .012-.25l.097-3.362c.082-40.16 27.461-74.38 65.082-83.028v-.02c.008-54.327 38.047-101.238 91.204-112.46C209.55-8.344 263.309 19.176 285.28 68.863c43.567-6.16 85.7 18.266 102 59.14 33.32 3.54 60.36 34.38 60.43 70.52l.078 3.418c0 .07.012.141.012.211zm0 0"
+                        opacity="1" data-original="#00acea" class=""></path>
+                </g>
+            </svg>
+        </div>
+
+    </div>
+
+    <script>
+        function updateTimer() {
+            // Fecha objetivo (ajusta esta fecha según tus necesidades)
+            const targetDate = new Date('2024-12-31 00:00:00').getTime();
+
+            function update() {
+                const now = new Date().getTime();
+                const difference = targetDate - now;
+
+                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+                document.getElementById('days').innerText = days.toString().padStart(2, '0');
+                document.getElementById('hours').innerText = hours.toString().padStart(2, '0');
+                document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
+                document.getElementById('seconds').innerText = seconds.toString().padStart(2, '0');
+
+                if (difference < 0) {
+                    clearInterval(interval);
+                    document.getElementById('timer').innerHTML = "¡Hora de despegar!";
+                }
+            }
+
+            update();
+            const interval = setInterval(update, 1000);
+        }
+
+        function createHearts() {
+            const heartsContainer = document.querySelector('.hearts');
+
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDuration = Math.random() * 2 + 3 + 's';
+                heart.style.opacity = Math.random();
+                heart.style.fontSize = Math.random() * 15 + 10 + 'px';
+
+                heartsContainer.appendChild(heart);
+
+                setTimeout(() => {
+                    heart.remove();
+                }, 5000);
+            }, 300);
+        }
+
+        // Llamar a la función cuando se carga la página
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTimer();
+            createHearts();
+        });
+    </script>
+</body>
+
+</html>
